@@ -7,14 +7,16 @@ int main(int argc, char *argv[]){
 		if(correctSyntax){
 			printf("Sintaxe correcta\n");
 
-			char *user,*password,*host,*urlpath;
+			char *user,*password,*host,*urlpath,*ip;
 
 			user=ALLOCSTRING;
 			password=ALLOCSTRING;
 			host=ALLOCSTRING;
 			urlpath=ALLOCSTRING;
+			ip=ALLOCSTRING;
 			printf("Ret: %d\n",parseParams(argv[1],user,password,host,urlpath));
-			loginUserPass(createSocket(host),user,password);
+			getIP(host,ip);
+			loginUserPass(createSocket(ip),user,password);
 		}
 		else printf("Sintaxe errada!\n");
 

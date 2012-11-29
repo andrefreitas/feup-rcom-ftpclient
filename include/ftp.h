@@ -26,4 +26,5 @@ int createSocket(char *host);
 void enterPassiveMode(int fd);
 int loginUser(int sockfd, char *user);
 int loginUserPass(int sockfd, char *user, char *pass);
+int getIP(char *host,char *ip);
 
