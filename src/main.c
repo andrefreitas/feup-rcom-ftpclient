@@ -14,6 +14,7 @@ int main(int argc, char *argv[]){
 			host=ALLOCSTRING;
 			urlpath=ALLOCSTRING;
 			printf("Ret: %d\n",parseParams(argv[1],user,password,host,urlpath));
+			loginUserPass(createSocket(host),user,password);
 		}
 		else printf("Sintaxe errada!\n");
 
