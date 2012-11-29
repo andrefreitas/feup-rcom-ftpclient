@@ -17,14 +17,15 @@
 #define LOGSUC "230"
 #define ASKPASS "331"
 #define CONSUC "220"
+#define PASV "227"
 
 
 int parseParams(char *argv,char *user,char *password, char *host, char *urlpath);
 int checkSyntax(char *argv);
 int download(char *argv);
 int createSocket(char *host);
-void enterPassiveMode(int fd);
 int loginUser(int sockfd, char *user);
 int loginUserPass(int sockfd, char *user, char *pass);
 int getIP(char *host,char *ip);
+int enterPassiveMode(int sockfd,char *pasvPort);
 

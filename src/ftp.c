@@ -36,6 +36,7 @@ int loginUser(int sockfd, char *user) {
 	bzero(buf, sizeof(buf));
 	len = read(sockfd, buf, MAXSIZE);
 	buf[len] = '\0';
+	//230 Login successful.
 	if (strncmp(buf, LOGSUC, 3) != 0)
 		return -1;
 	return 0;
@@ -52,6 +53,7 @@ int loginUserPass(int sockfd, char *user, char *pass) {
 	bzero(buf, sizeof(buf));
 	len = read(sockfd, buf, MAXSIZE);
 	buf[len] = '\0';
+	//331 Please specify the password.
 	if (strncmp(buf, ASKPASS, 3) != 0)
 		return -1;
 	bzero(buf, sizeof(buf));
@@ -62,16 +64,57 @@ int loginUserPass(int sockfd, char *user, char *pass) {
 	bzero(buf, sizeof(buf));
 	len = read(sockfd, buf, MAXSIZE);
 	buf[len] = '\0';
+	//230 Login successful.
 	if (strncmp(buf, LOGSUC, 3) != 0)
 		return -1;
 	return 0;
 }
 
-/*
- void enterPassiveMode(int sockfd) {
- write(sockfd, buf, strlen(buf));
+
+int enterPassiveMode(int sockfd,char *pasvPort) {
+		char *buf = ALLOCSTRING;
+		char *num1 = ALLOCSTRING;
+		char *num2 = ALLOCSTRING;
+		int n1,n2,nport;
+
+		char *temp,*temp2;
+		int len = 0;
+
+		strcpy(buf, "pasv \n");
+		write(sockfd, buf, strlen(buf));
+		bzero(buf, sizeof(buf));
+		len = read(sockfd, buf, MAXSIZE);
+		buf[len] = '\0';
+		// 227 Entering Passive Mode (192,168,50,138,71,81).
+		if(strncmp(buf,PASV,3) != 0)
+			return -1;
+		temp = strchr(buf, '(');
+		temp = strchr(temp, ',')+1;
+		temp = strchr(temp, ',')+1;
+		temp = strchr(temp, ',')+1;
+		temp = strchr(temp, ',')+1;
+		temp2 = strchr(temp,',')-1;
+
+		len = temp2 - temp + 1;
+		strncpy(num1, temp, len);
+		num1[len] = '\0';
+
+		temp2+=2;
+		temp = strchr(temp2,')')-1;
+
+		len = temp-temp2 +1;
+		strncpy(num2,temp2,len);
+		num2[len] = '\0';
+
+		n1 =atoi(num1);
+		n2 =atoi(num2);
+
+		nport = n1*256+n2;
+		sprintf(pasvPort, "%d", nport);
+
+		return 0;
  }
- */
+
 int createSocket(char *host) {
 	int sockfd, len;
 	struct sockaddr_in server_addr;
@@ -99,6 +142,7 @@ int createSocket(char *host) {
 	len = read(sockfd, buf, MAXSIZE);
 	buf[len] = '\0';
 
+	//220 FTP for Alf/Tom/Crazy/Pinguim
 	if (strncmp(buf, CONSUC, 3) != 0)
 		return -1;
 
