@@ -13,7 +13,7 @@
 
 #define MAXSIZE 256
 #define ALLOCSTRING malloc(sizeof(char)*MAXSIZE)
-#define PORT 21
+#define FTPPORT 21
 #define LOGSUC "230"
 #define ASKPASS "331"
 #define CONSUC "220"
@@ -23,9 +23,9 @@
 int parseParams(char *argv,char *user,char *password, char *host, char *urlpath);
 int checkSyntax(char *argv);
 int download(char *argv);
-int createSocket(char *host);
+int createSocket(char *host, int port);
 int loginUser(int sockfd, char *user);
 int loginUserPass(int sockfd, char *user, char *pass);
 int getIP(char *host,char *ip);
-int enterPassiveMode(int sockfd,char *pasvPort);
+int enterPassiveMode(int sockfd);
 

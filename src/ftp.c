@@ -70,52 +70,48 @@ int loginUserPass(int sockfd, char *user, char *pass) {
 	return 0;
 }
 
+int enterPassiveMode(int sockfd) {
+	char *buf = ALLOCSTRING;
+	char *num1 = ALLOCSTRING;
+	char *num2 = ALLOCSTRING;
+	int n1, n2;
 
-int enterPassiveMode(int sockfd,char *pasvPort) {
-		char *buf = ALLOCSTRING;
-		char *num1 = ALLOCSTRING;
-		char *num2 = ALLOCSTRING;
-		int n1,n2,nport;
+	char *temp, *temp2;
+	int len = 0;
 
-		char *temp,*temp2;
-		int len = 0;
+	strcpy(buf, "pasv \n");
+	write(sockfd, buf, strlen(buf));
+	bzero(buf, sizeof(buf));
+	len = read(sockfd, buf, MAXSIZE);
+	buf[len] = '\0';
+	// 227 Entering Passive Mode (192,168,50,138,71,81).
+	if (strncmp(buf, PASV, 3) != 0)
+		return -1;
+	temp = strchr(buf, '(');
+	temp = strchr(temp, ',') + 1;
+	temp = strchr(temp, ',') + 1;
+	temp = strchr(temp, ',') + 1;
+	temp = strchr(temp, ',') + 1;
+	temp2 = strchr(temp, ',') - 1;
 
-		strcpy(buf, "pasv \n");
-		write(sockfd, buf, strlen(buf));
-		bzero(buf, sizeof(buf));
-		len = read(sockfd, buf, MAXSIZE);
-		buf[len] = '\0';
-		// 227 Entering Passive Mode (192,168,50,138,71,81).
-		if(strncmp(buf,PASV,3) != 0)
-			return -1;
-		temp = strchr(buf, '(');
-		temp = strchr(temp, ',')+1;
-		temp = strchr(temp, ',')+1;
-		temp = strchr(temp, ',')+1;
-		temp = strchr(temp, ',')+1;
-		temp2 = strchr(temp,',')-1;
+	len = temp2 - temp + 1;
+	strncpy(num1, temp, len);
+	num1[len] = '\0';
 
-		len = temp2 - temp + 1;
-		strncpy(num1, temp, len);
-		num1[len] = '\0';
+	temp2 += 2;
+	temp = strchr(temp2, ')') - 1;
 
-		temp2+=2;
-		temp = strchr(temp2,')')-1;
+	len = temp - temp2 + 1;
+	strncpy(num2, temp2, len);
+	num2[len] = '\0';
 
-		len = temp-temp2 +1;
-		strncpy(num2,temp2,len);
-		num2[len] = '\0';
+	n1 = atoi(num1);
+	n2 = atoi(num2);
 
-		n1 =atoi(num1);
-		n2 =atoi(num2);
+	return (n1 * 256 + n2);
+}
 
-		nport = n1*256+n2;
-		sprintf(pasvPort, "%d", nport);
-
-		return 0;
- }
-
-int createSocket(char *host) {
+int createSocket(char *host, int port) {
 	int sockfd, len;
 	struct sockaddr_in server_addr;
 	char *buf = ALLOCSTRING;
@@ -124,7 +120,7 @@ int createSocket(char *host) {
 	bzero((char*) &server_addr, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = inet_addr(host); /*32 bit Internet address network byte ordered*/
-	server_addr.sin_port = htons(PORT); /*server TCP port must be network byte ordered */
+	server_addr.sin_port = htons(port); /*server TCP port must be network byte ordered */
 
 	/*open an TCP socket*/
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -139,12 +135,15 @@ int createSocket(char *host) {
 		exit(0);
 	}
 
-	len = read(sockfd, buf, MAXSIZE);
-	buf[len] = '\0';
+	if (port == FTPPORT) {
 
-	//220 FTP for Alf/Tom/Crazy/Pinguim
-	if (strncmp(buf, CONSUC, 3) != 0)
-		return -1;
+		len = read(sockfd, buf, MAXSIZE);
+		buf[len] = '\0';
+
+		//220 FTP for Alf/Tom/Crazy/Pinguim
+		if (strncmp(buf, CONSUC, 3) != 0)
+			return -1;
+	}
 
 	return sockfd;
 }

@@ -7,25 +7,25 @@ int main(int argc, char *argv[]){
 		if(correctSyntax){
 			printf("Sintaxe correcta\n");
 
-			char *user,*password,*host,*urlpath,*ip,*pasvPort;
-			int ret,sockfd;
+			char *user,*password,*host,*urlpath,*ip;
+			int ret,sock1fd,pasvPort,sock2fd;
 
 			user=ALLOCSTRING;
 			password=ALLOCSTRING;
 			host=ALLOCSTRING;
 			urlpath=ALLOCSTRING;
 			ip=ALLOCSTRING;
-			pasvPort=ALLOCSTRING;
 
 			ret = parseParams(argv[1],user,password,host,urlpath);
-			printf("Ret: %d\n",ret);
 			getIP(host,ip);
-			sockfd=createSocket(ip);
+			sock1fd=createSocket(ip,FTPPORT);
 			if(ret == 0)
-				loginUserPass(sockfd,user,password);
+				loginUserPass(sock1fd,user,password);
 			else if(ret == 1)
-				loginUser(sockfd,user);
-			enterPassiveMode(sockfd,pasvPort);
+				loginUser(sock1fd,user);
+			pasvPort = enterPassiveMode(sock1fd);
+			sock2fd = createSocket(ip,pasvPort);
+
 		}
 		else printf("Sintaxe errada!\n");
 
