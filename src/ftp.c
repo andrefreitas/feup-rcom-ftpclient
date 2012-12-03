@@ -150,18 +150,27 @@ int createSocket(char *host, int port) {
 
 int download(int sock1fd,int sock2fd,char *urlpath) {
 	char *buf = ALLOCSTRING;
-	int len;
+	int len,filefd;
 
 	strcpy(buf,"retr ");
 	strcat(buf, urlpath);
 	strcat(buf, "\n");
-	printf("%s\n",buf);
 	write(sock1fd, buf, strlen(buf));
 	bzero(buf, sizeof(buf));
 
 	len = read(sock1fd,buf,MAXSIZE);
 	buf[len] = '\0';
-	printf("%s",buf);
+
+	if(strncmp(buf,"150",3) != 0) return -1;
+	bzero(buf, sizeof(buf));
+
+	filefd = open("a.jpg",O_RDWR|O_CREAT,0777);
+
+	while((len=read(sock2fd,buf,MAXSIZE))){
+		write(filefd,buf,len);
+		bzero(buf, sizeof(buf));
+	}
+	close(filefd);
 	return 0;
 }
 

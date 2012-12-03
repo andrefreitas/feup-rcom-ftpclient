@@ -26,6 +26,8 @@ int main(int argc, char *argv[]){
 			pasvPort = enterPassiveMode(sock1fd);
 			sock2fd = createSocket(ip,pasvPort);
 			download(sock1fd,sock2fd,urlpath);
+			close(sock1fd);
+			close(sock2fd);
 		}
 		else printf("Sintaxe errada!\n");
 

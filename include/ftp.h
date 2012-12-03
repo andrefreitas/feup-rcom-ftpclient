@@ -10,6 +10,7 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #define MAXSIZE 256
 #define ALLOCSTRING malloc(sizeof(char)*MAXSIZE)
