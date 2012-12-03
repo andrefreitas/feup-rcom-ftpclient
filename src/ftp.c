@@ -164,7 +164,7 @@ int download(int sock1fd,int sock2fd,char *urlpath) {
 	if(strncmp(buf,"150",3) != 0) return -1;
 	bzero(buf, sizeof(buf));
 
-	filefd = open("a.jpg",O_RDWR|O_CREAT,0777);
+	filefd = open("canvas.h",O_RDWR|O_CREAT,0777);
 
 	while((len=read(sock2fd,buf,MAXSIZE))){
 		write(filefd,buf,len);
@@ -232,7 +232,7 @@ int parseParams(char *argv, char *user, char *password, char *host,
 }
 
 int checkSyntax(char *argv) {
-	// re = ftp://(([a-zA-Z0-9.]+:[a-zA-Z0-9]*@)?|@?)([a-zA-Z0-9]+[.])+[a-zA-Z0-9]+/([a-zA-Z0-9]+[/]?)*([.][a-zA-Z0-9]+)?
+	// re = ftp://(([a-zA-Z0-9.]+:[a-zA-Z0-9]*@)?|@?)([a-zA-Z0-9]+[.])+[a-zA-Z0-9]+/([a-zA-Z0-9_-]+[/]?)*[a-zA-Z0-9_-]+([.][a-zA-Z0-9]+)?
 	// argv = ftp://user:password@host.com/urlpath
 	// argv = ftp://host.com/urlpath
 	// argv = ftp://foo:@host.com
@@ -243,7 +243,7 @@ int checkSyntax(char *argv) {
 	regmatch_t pmatch[nmatch];
 
 	regcomp(&regex,
-			"ftp://(([a-zA-Z0-9.]+:[a-zA-Z0-9]*@)?|@?)([a-zA-Z0-9]+[.])+[a-zA-Z0-9]+/([a-zA-Z0-9]+[/]?)*([.][a-zA-Z0-9]+)?",
+			"ftp://(([a-zA-Z0-9.]+:[a-zA-Z0-9]*@)?|@?)([a-zA-Z0-9]+[.])+[a-zA-Z0-9]+/([a-zA-Z0-9 _-]+[/]?)*[a-zA-Z0-9 _-]+([.][a-zA-Z0-9]+)?",
 			REG_EXTENDED);
 	regexec(&regex, argv, nmatch, pmatch, 0);
 
