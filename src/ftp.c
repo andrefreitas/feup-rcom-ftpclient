@@ -79,7 +79,7 @@ int enterPassiveMode(int sockfd) {
 	char *temp, *temp2;
 	int len = 0;
 
-	strcpy(buf, "pasv \n");
+	strcpy(buf, "pasv\n");
 	write(sockfd, buf, strlen(buf));
 	bzero(buf, sizeof(buf));
 	len = read(sockfd, buf, MAXSIZE);
@@ -148,14 +148,20 @@ int createSocket(char *host, int port) {
 	return sockfd;
 }
 
-int download(char* argv) {
-	char *user, *password, *host, *urlpath;
-	user = ALLOCSTRING;
-	password = ALLOCSTRING;
-	host = ALLOCSTRING;
-	urlpath = ALLOCSTRING;
+int download(int sock1fd,int sock2fd,char *urlpath) {
+	char *buf = ALLOCSTRING;
+	int len;
 
-	parseParams(argv, user, password, host, urlpath);
+	strcpy(buf,"retr ");
+	strcat(buf, urlpath);
+	strcat(buf, "\n");
+	printf("%s\n",buf);
+	write(sock1fd, buf, strlen(buf));
+	bzero(buf, sizeof(buf));
+
+	len = read(sock1fd,buf,MAXSIZE);
+	buf[len] = '\0';
+	printf("%s",buf);
 	return 0;
 }
 
