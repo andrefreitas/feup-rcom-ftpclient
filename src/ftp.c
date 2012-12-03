@@ -150,6 +150,9 @@ int createSocket(char *host, int port) {
 
 int download(int sock1fd,int sock2fd,char *urlpath) {
 	char *buf = ALLOCSTRING;
+	char *fileName = ALLOCSTRING;
+	char *temp = ALLOCSTRING;
+	strcpy(fileName,urlpath);
 	int len,filefd;
 
 	strcpy(buf,"retr ");
@@ -164,7 +167,8 @@ int download(int sock1fd,int sock2fd,char *urlpath) {
 	if(strncmp(buf,"150",3) != 0) return -1;
 	bzero(buf, sizeof(buf));
 
-	filefd = open("canvas.h",O_RDWR|O_CREAT,0777);
+	while((temp=strchr(fileName,'/'))) strcpy(fileName,temp+1);
+	filefd = open(fileName,O_RDWR|O_CREAT,0777);
 
 	while((len=read(sock2fd,buf,MAXSIZE))){
 		write(filefd,buf,len);
