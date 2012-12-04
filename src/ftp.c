@@ -5,22 +5,26 @@ int getIP(char *host, char *ip) {
 
 	/*
 	 struct hostent {
-	 char    *h_name;	Official name of the host.
-	 char    **h_aliases;	A NULL-terminated array of alternate names for the host.
-	 int     h_addrtype;	The type of address being returned; usually AF_INET.
-	 int     h_length;	The length of the address in bytes.
-	 char    **h_addr_list;	A zero-terminated array of network addresses for the host.
-	 Host addresses are in Network Byte Order.
+	 char    *h_name;	//Official name of the host.
+	 char    **h_aliases;	//A NULL-terminated array of alternate names for the host.
+	 int     h_addrtype;	//The type of address being returned; usually AF_INET.
+	 int     h_length;	//The length of the address in bytes.
+	 char    **h_addr_list;	//A zero-terminated array of network addresses for the host.
+	 //Host addresses are in Network Byte Order.
 	 };
 
-	 #define h_addr h_addr_list[0]	The first address in h_addr_list.
+	 #define h_addr h_addr_list[0]	//The first address in h_addr_list.
 	 */
+	printf("****Host: %s\n", host);
+	if (host[0] == '@')
+		host++;
 	if ((h = gethostbyname(host)) == NULL ) {
 		herror("gethostbyname");
 		exit(1);
 	}
 
 	strcpy(ip, inet_ntoa(*((struct in_addr *) h->h_addr)));
+	printf("****IP: %s\n", ip);
 
 	return 0;
 }
@@ -29,13 +33,16 @@ int loginUser(int sockfd, char *user) {
 	char *buf = ALLOCSTRING;
 	int len = 0;
 
-	strcpy(buf, "user ");
+	strcpy(buf, "USER ");
 	strcat(buf, user);
-	strcat(buf, "\n");
+	strcat(buf, "\r\n");
 	write(sockfd, buf, strlen(buf));
+	printf("%s\n", buf);
+	sleep(1);
 	bzero(buf, sizeof(buf));
 	len = read(sockfd, buf, MAXSIZE);
 	buf[len] = '\0';
+	printf("%s\n", buf);
 	//230 Login successful.
 	if (strncmp(buf, LOGSUC, 3) != 0)
 		return -1;
@@ -45,25 +52,30 @@ int loginUser(int sockfd, char *user) {
 int loginUserPass(int sockfd, char *user, char *pass) {
 	char *buf = ALLOCSTRING;
 	int len = 0;
-
-	strcpy(buf, "user ");
+	strcpy(buf, "USER ");
 	strcat(buf, user);
-	strcat(buf, "\n");
+	strcat(buf, "\r\n");
 	write(sockfd, buf, strlen(buf));
+	printf("%s\n", buf);
+	sleep(1);
 	bzero(buf, sizeof(buf));
 	len = read(sockfd, buf, MAXSIZE);
 	buf[len] = '\0';
+	printf("%s\n", buf);
 	//331 Please specify the password.
-	if (strncmp(buf, ASKPASS, 3) != 0)
-		return -1;
+		if (strncmp(buf, ASKPASS, 3) != 0)
+			return -1;
 	bzero(buf, sizeof(buf));
-	strcpy(buf, "pass ");
+	strcpy(buf, "PASS ");
 	strcat(buf, pass);
-	strcat(buf, "\n");
+	strcat(buf, "\r\n");
 	write(sockfd, buf, strlen(buf));
+	printf("%s\n", buf);
+	sleep(1);
 	bzero(buf, sizeof(buf));
 	len = read(sockfd, buf, MAXSIZE);
 	buf[len] = '\0';
+	printf("%s\n", buf);
 	//230 Login successful.
 	if (strncmp(buf, LOGSUC, 3) != 0)
 		return -1;
@@ -79,11 +91,14 @@ int enterPassiveMode(int sockfd) {
 	char *temp, *temp2;
 	int len = 0;
 
-	strcpy(buf, "pasv\n");
+	strcpy(buf, "pasv\r\n");
 	write(sockfd, buf, strlen(buf));
+	printf("%s\n", buf);
+	sleep(1);
 	bzero(buf, sizeof(buf));
 	len = read(sockfd, buf, MAXSIZE);
 	buf[len] = '\0';
+	printf("%s\n", buf);
 	// 227 Entering Passive Mode (192,168,50,138,71,81).
 	if (strncmp(buf, PASV, 3) != 0)
 		return -1;
@@ -136,10 +151,11 @@ int createSocket(char *host, int port) {
 	}
 
 	if (port == FTPPORT) {
-
+		sleep(1);
+		bzero(buf, sizeof(buf));
 		len = read(sockfd, buf, MAXSIZE);
 		buf[len] = '\0';
-
+		printf("%s\n", buf);
 		//220 FTP for Alf/Tom/Crazy/Pinguim
 		if (strncmp(buf, CONSUC, 3) != 0)
 			return -1;
@@ -148,30 +164,35 @@ int createSocket(char *host, int port) {
 	return sockfd;
 }
 
-int download(int sock1fd,int sock2fd,char *urlpath) {
+int download(int sock1fd, int sock2fd, char *urlpath) {
 	char *buf = ALLOCSTRING;
 	char *fileName = ALLOCSTRING;
 	char *temp = ALLOCSTRING;
-	strcpy(fileName,urlpath);
-	int len,filefd;
+	strcpy(fileName, urlpath);
+	int len, filefd;
 
-	strcpy(buf,"retr ");
+	strcpy(buf, "retr ");
 	strcat(buf, urlpath);
-	strcat(buf, "\n");
+	strcat(buf, "\r\n");
 	write(sock1fd, buf, strlen(buf));
+	sleep(1);
 	bzero(buf, sizeof(buf));
 
-	len = read(sock1fd,buf,MAXSIZE);
+	len = read(sock1fd, buf, MAXSIZE);
 	buf[len] = '\0';
+	printf("%s\n", buf);
 
-	if(strncmp(buf,"150",3) != 0) return -1;
+	if (strncmp(buf, OPENFILE, 3) != 0)
+		return -1;
 	bzero(buf, sizeof(buf));
 
-	while((temp=strchr(fileName,'/'))) strcpy(fileName,temp+1);
-	filefd = open(fileName,O_RDWR|O_CREAT,0777);
+	while ((temp = strchr(fileName, '/')))
+		strcpy(fileName, temp + 1);
+	filefd = open(fileName, O_RDWR | O_CREAT | O_TRUNC, 0777);
 
-	while((len=read(sock2fd,buf,MAXSIZE))){
-		write(filefd,buf,len);
+	while ((len = read(sock2fd, buf, MAXSIZE))) {
+		printf("%s\n", buf);
+		write(filefd, buf, len);
 		bzero(buf, sizeof(buf));
 	}
 	close(filefd);

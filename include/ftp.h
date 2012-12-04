@@ -12,13 +12,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#define MAXSIZE 256
+#define MAXSIZE 512
 #define ALLOCSTRING malloc(sizeof(char)*MAXSIZE)
 #define FTPPORT 21
 #define LOGSUC "230"
 #define ASKPASS "331"
 #define CONSUC "220"
 #define PASV "227"
+#define OPENFILE "150"
 
 
 int parseParams(char *argv,char *user,char *password, char *host, char *urlpath);
