@@ -257,7 +257,7 @@ int parseParams(char *argv, char *user, char *password, char *host,
 }
 
 int checkSyntax(char *argv) {
-	// re = ftp://(([a-zA-Z0-9.]+:[a-zA-Z0-9]*@)?|@?)([a-zA-Z0-9]+[.])+[a-zA-Z0-9]+/([a-zA-Z0-9_-]+[/]?)*[a-zA-Z0-9_-]+([.][a-zA-Z0-9]+)?
+	// re = ftp://(([a-zA-Z0-9.]+:[a-zA-Z0-9]*@)?|@?)([a-zA-Z0-9]+[.])+[a-zA-Z0-9]+/([a-zA-Z0-9 .+_-]+[/]?)*[a-zA-Z0-9 .+_-]+([.][a-zA-Z0-9]+)?
 	// argv = ftp://user:password@host.com/urlpath
 	// argv = ftp://host.com/urlpath
 	// argv = ftp://foo:@host.com
@@ -268,7 +268,7 @@ int checkSyntax(char *argv) {
 	regmatch_t pmatch[nmatch];
 
 	regcomp(&regex,
-			"ftp://(([a-zA-Z0-9.]+:[a-zA-Z0-9]*@)?|@?)([a-zA-Z0-9]+[.])+[a-zA-Z0-9]+/([a-zA-Z0-9 _-]+[/]?)*[a-zA-Z0-9 _-]+([.][a-zA-Z0-9]+)?",
+			"ftp://(([a-zA-Z0-9.]+:[a-zA-Z0-9]*@)?|@?)([a-zA-Z0-9]+[.])+[a-zA-Z0-9]+/([a-zA-Z0-9 .+_-]+[/]?)*[a-zA-Z0-9 .+_-]+([.][a-zA-Z0-9]+)?",
 			REG_EXTENDED);
 	regexec(&regex, argv, nmatch, pmatch, 0);
 
