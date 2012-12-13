@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#define MAXSIZE 512
+#define MAXSIZE 1024
 #define ALLOCSTRING malloc(sizeof(char)*MAXSIZE)
 #define FTPPORT 21
 #define LOGSUC "230"
